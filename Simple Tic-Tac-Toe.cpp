@@ -268,6 +268,24 @@ winner CheckWin(int gamestate[])
         victor.check = true;
         victor.player = 1;
     }
+    // Draw Test
+    else
+    {
+        bool DrawTest = true;
+        for (int i = 0; i < 9; i++)
+        {
+            if (gamestate[i] == 2)
+            {
+                DrawTest = false;
+            }
+        }
+        if (DrawTest)
+        {
+            FinalBoardState(gamestate);
+            cout << "The Game is a Draw.\n";
+            exit(NULL);
+        }
+    }
     return victor;
 }
 
