@@ -47,10 +47,10 @@ int main()
 
 int Turn()
 {
-    char start = 0;
+    int start = 0;
     cout << "Who will go first? 1 = Ai; 2 = Player; 3 = Random\n";
     cin >> start;
-    if (start == '1' || start == '2' || start == '3')
+    if (start == 1 || start == 2 || start == 3)
     {
         return start;
     }
