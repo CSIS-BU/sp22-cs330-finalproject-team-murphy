@@ -10,7 +10,7 @@ using namespace std;
 mt19937 mt(time(nullptr));
 struct winner { bool check; int player; };
 
-int Turn();
+int Turn(int errCnt);
 winner CompTurn(int gamestate[]);
 winner HumanTurn(int gamestate[]);
 winner CheckWin(int gamestate[]);
@@ -25,7 +25,8 @@ int main()
     winner victor;
     victor.check = false;
     victor.player = 2;
-    int starter = Turn();
+    int errCnt = 0;
+    int starter = Turn(errCnt);
     cout << "Player = X, AI = O\n";
     if (starter == 3)
     {
@@ -45,11 +46,17 @@ int main()
     Victor(victor.player);
 }
 
-int Turn()
+int Turn(int errCnt)
 {
     int start = 0;
+    errCnt++;
     cout << "Who will go first? 1 = Ai; 2 = Player; 3 = Random\n";
     cin >> start;
+    if (errCnt >= 10)
+    {
+        // exit(84840);
+        exit(1491149029);
+    }
     if (start == 1 || start == 2 || start == 3)
     {
         return start;
@@ -57,7 +64,7 @@ int Turn()
     else
     {
         cout << "Invalid Code. Type Again.\n";
-        Turn();
+        Turn(errCnt);
     }
 }
 
@@ -108,6 +115,7 @@ winner CompTurn(int gamestate[])
         test = CheckWin(gamestate);
         if (test.check)
         {
+            cvictor = test;
             cout << "Final Board State\n";
             FinalBoardState(gamestate);
             return cvictor;
@@ -164,6 +172,7 @@ winner HumanTurn(int gamestate[])
         test = CheckWin(gamestate);
         if (test.check)
         {
+            hvictor = test;
             cout << "Final Board State\n";
             FinalBoardState(gamestate);
             return hvictor;
