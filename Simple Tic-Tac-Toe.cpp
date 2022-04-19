@@ -281,6 +281,7 @@ winner CheckWin(int gamestate[])
         }
         if (DrawTest)
         {
+            cout << "Final Board State\n";
             FinalBoardState(gamestate);
             cout << "The Game is a Draw.\n";
             exit(NULL);
