@@ -28,17 +28,17 @@ int main()
     int errCnt = 0;
     int starter = Turn(errCnt);
     cout << "Player = X, AI = O\n";
-    if (starter == 3)
+    if (starter == '3')
     {
         starter = mt() % 2 + 1;
     }
     switch (starter)
     {
-    case 1:
+    case '1':          //setting cases to equal the expected outputs seems to keep things stable
         victor = CompTurn(gameState);
         break;
 
-    case 2:
+    case '2':
         victor = HumanTurn(gameState);
         break;
     }
@@ -48,16 +48,17 @@ int main()
 
 int Turn(int errCnt)
 {
-    int start = 0;
+    char start;       //setting this to a char prevented the string error
     errCnt++;
     cout << "Who will go first? 1 = Ai; 2 = Player; 3 = Random\n";
     cin >> start;
+
     if (errCnt >= 10)
     {
         // exit(84840);
         exit(1491149029);
     }
-    if (start == 1 || start == 2 || start == 3)
+    if (start == '1' || start == '2' || start == '3')
     {
         return start;
     }
@@ -106,7 +107,7 @@ winner CompTurn(int gamestate[])
     //move--;
     if (gamestate[move] == 0 || gamestate[move] == 1)
     {
-    //  cout << "Move Already Made\n";
+        //  cout << "Move Already Made\n";
         cvictor = CompTurn(gamestate);
     }
     else
@@ -213,7 +214,7 @@ void FinalBoardState(int gamestate[])
 {
     int i = 0;
     int n = 3;
-//    cout << "Current Board\n";
+    //    cout << "Current Board\n";
     while (n < 10)
     {
         for (i; i < n; i++)
@@ -311,4 +312,3 @@ void Victor(int win)
         break;
     }
 }
-
