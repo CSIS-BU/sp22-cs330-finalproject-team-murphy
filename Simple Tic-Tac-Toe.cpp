@@ -30,18 +30,18 @@ int main()
     cout << "Player = X, AI = O\n";
     if (starter == '3')
     {
-       int ran = mt() % 2 + 1;
-       switch (ran)
-       {
-       case 1:          //setting cases to equal the expected outputs seems to keep things stable
-           victor = CompTurn(gameState);
-           break;
+        int ran = mt() % 2 + 1;
+        switch (ran)
+        {
+        case 1:          //setting cases to equal the expected outputs seems to keep things stable
+            victor = CompTurn(gameState);
+            break;
 
-       case 2:
-           victor = HumanTurn(gameState);
-           break;
-       }
-       //Victor(victor.player);
+        case 2:
+            victor = HumanTurn(gameState);
+            break;
+        }
+        //Victor(victor.player);
     }
     switch (starter)
     {
@@ -75,7 +75,7 @@ int Turn(int errCnt)
     }
     else
     {
-        cout << "Invalid Code. Type Again.\n";
+        cout << "Invalid Input. Type Again.\n";
         Turn(errCnt);
     }
 }
@@ -184,6 +184,7 @@ winner HumanTurn(int gamestate[])
         if (movetest < 49 || movetest > 57)
         {
             cout << "Invalid input, try again.\n";
+            BoardState(gamestate);
             // https://www.cplusplus.com/forum/beginner/48568/
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
