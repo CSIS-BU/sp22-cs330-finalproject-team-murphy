@@ -130,6 +130,8 @@ winner HumanTurn(int gamestate[])
 {
     //int i = 0;
     //int n = 3;
+    char moveholder;
+    int movetest;
     int move;
     winner hvictor;
     hvictor.check = false;
@@ -159,9 +161,31 @@ winner HumanTurn(int gamestate[])
     //    cout << "\n";
     //}
     BoardState(gamestate);
-    cout << "Make a Move [1-9]\n";
+    /*cout << "Make a Move [1-9]\n";
     cin >> move;
+    move--;*/
+
+    while (1)
+    {
+        cout << "Make a Move 1-9\n";
+        cin >> moveholder;
+        int movetest = (int)moveholder;
+        if (movetest < 49 || movetest > 57)
+        {
+            cout << "Invalid input, try again.\n";
+            // https://www.cplusplus.com/forum/beginner/48568/
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        else
+        {
+            move = movetest - '0';
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        }
+    }
+
     move--;
+
     if (gamestate[move] == 0 || gamestate[move] == 1)
     {
         cout << "Move Already Made\n";
