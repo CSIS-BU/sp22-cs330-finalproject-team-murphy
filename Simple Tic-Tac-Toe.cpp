@@ -30,7 +30,18 @@ int main()
     cout << "Player = X, AI = O\n";
     if (starter == '3')
     {
-        starter = mt() % 2 + 1;
+       int ran = mt() % 2 + 1;
+       switch (ran)
+       {
+       case 1:          //setting cases to equal the expected outputs seems to keep things stable
+           victor = CompTurn(gameState);
+           break;
+
+       case 2:
+           victor = HumanTurn(gameState);
+           break;
+       }
+       //Victor(victor.player);
     }
     switch (starter)
     {
