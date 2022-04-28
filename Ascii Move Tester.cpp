@@ -9,6 +9,7 @@ int main()
 {
 
     char move;
+    int val;
     while (1)
     {
         cout << "Make a Move 1-9\n";
@@ -22,12 +23,12 @@ int main()
         }
         else
         {
-            int val = move - '0';
+            val = move - '0';
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             break;
         }
     }
 
-    cout << "Move Made = " << move;
+    cout << "Move Made = " << val;
 }
 
