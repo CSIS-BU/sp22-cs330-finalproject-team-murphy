@@ -23,6 +23,7 @@ int client(char* server_ip, char* server_port)
 	int yes = 1; // used in setsocketopt()
 	char* status;
 	unsigned char buffer[SEND_BUFFER_SIZE];
+	int gameState[10] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, NULL };
 
 	// build address data structure with getaddrinfo()
 	memset(&hints, 0, sizeof hints);
@@ -35,7 +36,7 @@ int client(char* server_ip, char* server_port)
 		errx(1, "%s", gai_strerror(error));
 	}
 
-	// create a coket. here, s is the new socket descriptor
+	// create a socket. here, s is the new socket descriptor
 	if ((sock_fd = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol)) < 0)
 	{
 		// handle the error if failed to create a socket
@@ -54,11 +55,17 @@ int client(char* server_ip, char* server_port)
 	}
 
 	int size;
+	int explode = 0;
 	while ((size = fread(buffer, 1, SEND_BUFFER_SIZE, stdin)))
+		// Add gamestate & short (0,1)
 	{
-		if (send(sock_fd, buffer, size, 0) < 0)
+		if (send(sock_fd, buffer, size, gameState, explode, 0) < 0)
 		{
 			perror("client: send");
+		}
+		if (explode == 1)
+		{
+			close(sock_fd);
 		}
 	}
 
