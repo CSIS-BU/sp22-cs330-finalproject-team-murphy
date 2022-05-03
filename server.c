@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
             int errCnt = 0;
             int starter = Turn(newClient, buffer [BUFFER_SIZE], errCnt);
             char playerSymbol[] = "Player = X, AI = O\n";
+            send(newClient, playerSymbol, strlen(playerSymbol), 0);
 
             if (starter == '3')
             {
@@ -244,13 +245,14 @@ winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     while (1)
     {
         char makeAMove[] = "Make a Move 1-9\n";
+        send(newClient, makeAMove, strlen(makeAMove), 0);
 //        cout << "Make a Move 1-9\n";
 //        cin >> moveholder;
         int movetest = (int)moveholder;
         if (movetest < 49 || movetest > 57)
         {
             char invalidInput[] = "Invalid Input. Type Again.\n";
-            send(newClient, startingPlayer, strlen(startingPlayer), 0);
+            send(newClient, invalidInput, strlen(invalidInput), 0);
 //            cout << "Invalid input, try again.\n";
             BoardState(newClient, buffer[BUFFER_SIZE], gamestate);
             // https://www.cplusplus.com/forum/beginner/48568/
@@ -269,6 +271,7 @@ winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     if (gamestate[move] == 0 || gamestate[move] == 1)
     {
         char moveMade[] = "Move Already Made\n";
+        send(newClient, moveMade, strlen(moveMade), 0);
 //        cout << "Move Already Made\n";
         hvictor = HumanTurn(newClient, buffer[BUFFER_SIZE], gamestate);
     }
@@ -280,6 +283,7 @@ winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
         {
             hvictor = test;
             char finalBoardState[] = "Final Board State\n";
+            send(newClient, finalBoardState, strlen(finalBoardState), 0);
 //            cout << "Final Board State\n";
             FinalBoardState(newClient, buffer[BUFFER_SIZE], gamestate);
             return hvictor;
@@ -319,6 +323,8 @@ void BoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
         }
         gamestateReplica[i + 2 * p + 1] = '\n';
         p += 1;
+        send(newClient, currentBoard, strlen(currentBoard), 0);
+        send(newClient, gamestateReplica, strlen(gamestateReplica), 0);
 //        n += 3;
 //        cout << "\n";
     }
@@ -328,9 +334,12 @@ void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 {
     int i = 0;
     int n = 3;
+    int p = 0;
+    char currentBoard[] = "Final Board\n";
+    char gamestateReplica[15];
     //    cout << "Current Board\n";
 //    char currentBoard[] = "Current Board\n";
-    char gamestateReplica[10];
+//    char gamestateReplica[10];
     while (n < 10)
     {
         for (i; i < n; i++)
@@ -338,18 +347,25 @@ void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
             switch (gamestate[i])
             {
             case 0:
-                cout << "O";
+                //cout << "O";
+                gamestateReplica[i + 2 * p] = 'O';
                 break;
             case 1:
-                cout << "X";
+                //cout << "X";
+                gamestateReplica[i + 2 * p] = 'X';
                 break;
             case 2:
-                cout << "|";
+                //cout << "|";
+                gamestateReplica[i + 2 * p] = '|';
                 break;
             }
         }
-        n += 3;
-        cout << "\n";
+        gamestateReplica[i + 2 * p + 1] = '\n';
+        p += 1;
+        send(newClient, currentBoard, strlen(currentBoard), 0);
+        send(newClient, gamestateReplica, strlen(gamestateReplica), 0);
+        //        n += 3;
+        //        cout << "\n";
     }
 }
 
@@ -405,13 +421,14 @@ winner CheckWin(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
                 DrawTest = 0; //false
             }
         }
-        if (DrawTest == 1)
+        if (DrawTest == 1) //True
         {
             char finalBoardState[] = "Final Board State\n";
+            send(newClient, finalBoardState, strlen(finalBoardState), 0);
 //            cout << "Final Board State\n";
             FinalBoardState(newClient, buffer[BUFFER_SIZE], gamestate);
-            char draw[] = "Final Board State\n";
-            
+            char draw[] = "The Game is a Draw.\n";
+            send(newClient, draw, strlen(draw), 0);
 //            cout << "The Game is a Draw.\n";
             exit(NULL);
         }
