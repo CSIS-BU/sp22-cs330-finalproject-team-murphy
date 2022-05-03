@@ -168,8 +168,8 @@ int Turn(int newClient, char buffer [BUFFER_SIZE], int errCnt)
             errCnt++;
             // send(newClient, invalidInput, strlen(invalidInput), 0);
             // temp fix to write to buffer?
-             size_t invalidInputLen = sprintf(buf, invalidInput, 1);
-             send(newClient, buf, invalidInputLen, 0);
+//             size_t invalidInputLen = sprintf(buf, invalidInput, 1);
+             send(newClient, invalidInput, strlen(invalidInput), 0);
 
             if (errCnt >= 10)
             {
@@ -411,6 +411,7 @@ winner CheckWin(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 //            cout << "Final Board State\n";
             FinalBoardState(newClient, buffer[BUFFER_SIZE], gamestate);
             char draw[] = "Final Board State\n";
+            
 //            cout << "The Game is a Draw.\n";
             exit(NULL);
         }
@@ -418,15 +419,20 @@ winner CheckWin(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     return victor;
 }
 
+// Done
 void Victor(int newClient, char buffer[BUFFER_SIZE], int win)
 {
     switch (win)
     {
     case 0:
-        cout << "You Lose!\n";
+        char lose[] = "You Lose!\n";
+        send(newClient, lose, strlen(lose), 0);
+//        cout << "You Lose!\n";
         break;
     case 1:
-        cout << "You Win!\n";
+        char win[] = "You Win!\n";
+        send(newClient, win, strlen(win), 0);
+//        cout << "You Win!\n";
         break;
     }
 }
