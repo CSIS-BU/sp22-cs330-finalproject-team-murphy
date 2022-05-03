@@ -302,7 +302,8 @@ void BoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     int n = 3;
     int p = 0;
     char currentBoard[] = "Current Board\n";
-    char gamestateReplica[15];
+    send(newClient, currentBoard, strlen(currentBoard), 0);
+    char gamestateReplica[16];
 //    cout << "Current Board\n";
     while (n < 10)
     {
@@ -326,11 +327,10 @@ void BoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
         }
         gamestateReplica[i + 2 * p + 1] = '\n';
         p += 1;
-        send(newClient, currentBoard, strlen(currentBoard), 0);
-        send(newClient, gamestateReplica, strlen(gamestateReplica), 0);
-//        n += 3;
+        n += 3;
 //        cout << "\n";
     }
+    send(newClient, gamestateReplica, strlen(gamestateReplica), 0);
 }
 
 void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
@@ -338,8 +338,9 @@ void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     int i = 0;
     int n = 3;
     int p = 0;
-    char currentBoard[] = "Final Board\n";
-    char gamestateReplica[15];
+    char finalBoard[] = "Final Board\n";
+    send(newClient, finalBoard, strlen(finalBoard), 0);
+    char gamestateReplica[16];
     //    cout << "Current Board\n";
 //    char currentBoard[] = "Current Board\n";
 //    char gamestateReplica[10];
@@ -365,11 +366,10 @@ void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
         }
         gamestateReplica[i + 2 * p + 1] = '\n';
         p += 1;
-        send(newClient, currentBoard, strlen(currentBoard), 0);
-        send(newClient, gamestateReplica, strlen(gamestateReplica), 0);
-        //        n += 3;
+        n += 3;
         //        cout << "\n";
     }
+    send(newClient, gamestateReplica, strlen(gamestateReplica), 0);
 }
 
 winner CheckWin(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
