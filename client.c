@@ -4,6 +4,9 @@
 #include <arpa/inet.h>	
 #include <unistd.h>
 
+//#define BUFFER_SIZE 2000
+//#define PORT 80
+
 int main(int argc, char* argv[])
 {
 	int socket;
