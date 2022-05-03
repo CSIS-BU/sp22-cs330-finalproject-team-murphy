@@ -17,13 +17,13 @@
 #define QUEUE 5
 #define BUFFER_SIZE 2000
 
-int Turn(int newClient, char buffer [BUFFER_SIZE], int errCnt);
-winner CompTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[]);
-winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[]);
-winner CheckWin(int newClient, char buffer[BUFFER_SIZE], int gamestate[]);
-void Victor(int newClient, char buffer[BUFFER_SIZE], int win);
-void BoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[]);
-void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[]);
+int Turn(int newClient, char buffer, int errCnt);
+winner CompTurn(int newClient, int gamestate[]);
+winner HumanTurn(int newClient, char buffer, int gamestate[]);
+winner CheckWin(int newClient, int gamestate[]);
+void Victor(int newClient, int win);
+void BoardState(int newClient, int gamestate[]);
+void FinalBoardState(int newClient, int gamestate[]);
 
 int main(int argc, char *argv[])
 {
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
             victor.check = 0; //false
             victor.player = 2;
             int errCnt = 0;
-            int starter = Turn(newClient, buffer [BUFFER_SIZE], errCnt);
+            int starter = Turn(newClient, buffer, errCnt);
             char playerSymbol[] = "Player = X, AI = O\n";
             send(newClient, playerSymbol, strlen(playerSymbol), 0);
 
@@ -107,25 +107,25 @@ int main(int argc, char *argv[])
                 switch (ran)
                 {
                 case 1:          //setting cases to equal the expected outputs seems to keep things stable
-                    victor = CompTurn(newClient, buffer[BUFFER_SIZE], gameState);
+                    victor = CompTurn(newClient, gameState);
                     break;
 
                 case 2:
-                    victor = HumanTurn(newClient, buffer[BUFFER_SIZE], gameState);
+                    victor = HumanTurn(newClient, buffer, gameState);
                     break;
                 }
             }
             switch (starter)
             {
             case '1':          //setting cases to equal the expected outputs seems to keep things stable
-                victor = CompTurn(newClient, buffer[BUFFER_SIZE], gameState);
+                victor = CompTurn(newClient, gameState);
                 break;
 
             case '2':
-                victor = HumanTurn(newClient, buffer[BUFFER_SIZE], gameState);
+                victor = HumanTurn(newClient, buffer, gameState);
                 break;
             }
-            Victor(newClient, buffer[BUFFER_SIZE], victor.player);
+            Victor(newClient, victor.player);
 		}
 	}
 
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-int Turn(int newClient, char buffer [BUFFER_SIZE], int errCnt)
+int Turn(int newClient, char buffer, int errCnt)
 {
     char start = 'z';       //setting this to a char prevented the string error
     size_t length = 0;
@@ -193,7 +193,7 @@ int Turn(int newClient, char buffer [BUFFER_SIZE], int errCnt)
     //}
 }
 
-winner CompTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
+winner CompTurn(int newClient, int gamestate[])
 {
     int i = 0;
     int n = 3;
@@ -208,12 +208,12 @@ winner CompTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 
     if (gamestate[move] == 0 || gamestate[move] == 1)
     {
-        cvictor = CompTurn(newClient, buffer[BUFFER_SIZE], gamestate);
+        cvictor = CompTurn(newClient, gamestate);
     }
     else
     {
         gamestate[move] = 0;
-        test = CheckWin(newClient, buffer[BUFFER_SIZE], gamestate);
+        test = CheckWin(newClient, gamestate);
         if (test.check == 0)
         {
             cvictor = test;
@@ -221,15 +221,15 @@ winner CompTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 //            size_t finalBoardStateLen = sprintf(buf, finalBoardState, 1);
             send(newClient, finalBoardState, strlen(finalBoardState), 0);
 //            cout << "Final Board State\n";
-            FinalBoardState(newClient, buffer[BUFFER_SIZE], gamestate);
+            FinalBoardState(newClient, gamestate);
             return cvictor;
         }
-        cvictor = HumanTurn(newClient, buffer[BUFFER_SIZE], gamestate);
+        cvictor = HumanTurn(newClient, buffer, gamestate);
     }
     return cvictor;
 }
 
-winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
+winner HumanTurn(int newClient, char buffer, int gamestate[])
 {
     char moveholder;
     int movetest;
@@ -241,7 +241,7 @@ winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     test.check = false;
     test.player = 2;
     size_t ret;
-    BoardState(newClient, buffer[BUFFER_SIZE], gamestate);
+    BoardState(newClient, gamestate);
 
     while (1)
     {
@@ -257,7 +257,7 @@ winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
             char invalidInput[] = "Invalid Input. Type Again.\n";
             send(newClient, invalidInput, strlen(invalidInput), 0);
 //            cout << "Invalid input, try again.\n";
-            BoardState(newClient, buffer[BUFFER_SIZE], gamestate);
+            BoardState(newClient, gamestate);
             // https://www.cplusplus.com/forum/beginner/48568/
 //            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
@@ -276,27 +276,27 @@ winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
         char moveMade[] = "Move Already Made\n";
         send(newClient, moveMade, strlen(moveMade), 0);
 //        cout << "Move Already Made\n";
-        hvictor = HumanTurn(newClient, buffer[BUFFER_SIZE], gamestate);
+        hvictor = HumanTurn(newClient, buffer, gamestate);
     }
     else
     {
         gamestate[move] = 1;
-        test = CheckWin(newClient, buffer[BUFFER_SIZE], gamestate);
+        test = CheckWin(newClient, gamestate);
         if (test.check)
         {
             hvictor = test;
             char finalBoardState[] = "Final Board State\n";
             send(newClient, finalBoardState, strlen(finalBoardState), 0);
 //            cout << "Final Board State\n";
-            FinalBoardState(newClient, buffer[BUFFER_SIZE], gamestate);
+            FinalBoardState(newClient, gamestate);
             return hvictor;
         }
-        hvictor = CompTurn(newClient, buffer[BUFFER_SIZE], gamestate);
+        hvictor = CompTurn(newClient, gamestate);
     }
     return hvictor;
 }
 
-void BoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
+void BoardState(int newClient, int gamestate[])
 {
     int i = 0;
     int n = 3;
@@ -333,7 +333,7 @@ void BoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     send(newClient, gamestateReplica, strlen(gamestateReplica), 0);
 }
 
-void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
+void FinalBoardState(int newClient, int gamestate[])
 {
     int i = 0;
     int n = 3;
@@ -372,7 +372,7 @@ void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     send(newClient, gamestateReplica, strlen(gamestateReplica), 0);
 }
 
-winner CheckWin(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
+winner CheckWin(int newClient, int gamestate[])
 {
     winner victor;
     victor.check = 0; //false
@@ -429,7 +429,7 @@ winner CheckWin(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
             char finalBoardState[] = "Final Board State\n";
             send(newClient, finalBoardState, strlen(finalBoardState), 0);
 //            cout << "Final Board State\n";
-            FinalBoardState(newClient, buffer[BUFFER_SIZE], gamestate);
+            FinalBoardState(newClient, gamestate);
             char draw[] = "The Game is a Draw.\n";
             send(newClient, draw, strlen(draw), 0);
 //            cout << "The Game is a Draw.\n";
@@ -440,7 +440,7 @@ winner CheckWin(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 }
 
 // Done
-void Victor(int newClient, char buffer[BUFFER_SIZE], int win)
+void Victor(int newClient, int win)
 {
     switch (win)
     {
