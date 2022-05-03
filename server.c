@@ -3,11 +3,21 @@
 #include<sys/socket.h>
 #include<arpa/inet.h>	
 #include<unistd.h>
+#include<stdlib.h>
+#include<errno.h>
+#include<sys/types.h>
+#include<netdb.h>
+#include<netinet/in.h>
+#include<time.h>
+
+#define PORT 80
+#define QUEUE 5
 
 int main(int argc, char *argv[])
 {
 	int sock;
 	int clientSock;
+	int newClient;
 	int c;
 	int readSize;
 	struct sockaddr_in server;
@@ -23,9 +33,10 @@ int main(int argc, char *argv[])
 	puts("created socket");
 	
 	//get socket address
+	bzero((char*)&server, sizeof(server));
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;
-	server.sin_port = htons( 8888 );//idk what port we will use this is for testing
+	server.sin_port = htons( PORT );
 	
 	if(bind(sock,(struct sockaddr *)&server, sizeof(server)) < 0)
 	{
@@ -34,20 +45,40 @@ int main(int argc, char *argv[])
 	}
 	puts("binding succeeded");
 	
-	listen(sock, 3);//3 may need to be changed so more games can run simultaneously 
+	listen(sock, QUEUE);//Multiple Running Games
 	
 	//get connection
 	puts("looking for client");
 	c = sizeof(struct sockaddr_in);
 	
-	//accept connection
-	clientSock = accept(sock, (struct sockaddr *)&client, (socklen_t*)&c);
-	if (clientSock < 0)
+	//Create Constant Server
+	while (1)
 	{
-		perror("client not accepted");
-		return 1;
+		//accept connection
+		newClient = accept(sock, (struct sockaddr*)&client, (socklen_t*)&c);
+		if (newClient < 0)
+		{
+			perror("client not accepted");
+			close(newClient);
+		}
+		puts("client accepted");
+
+		// Accepts Multiple Clients
+		pid = fork();
+		if (pid > 0)
+		{
+			close(newClient);
+		}
+		else if (pid == 0)
+		{
+			close(clientSock);
+
+
+			// Tic-Tac-Toe Functionality
+		}
 	}
-	puts("client accepted");
+
+
 	
 	//get and reply to message
 	while((readSize = recv(clientSock, contents, 2000, 0)) > 0 )
