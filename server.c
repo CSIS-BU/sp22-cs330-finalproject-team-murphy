@@ -293,7 +293,10 @@ void BoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 {
     int i = 0;
     int n = 3;
-    cout << "Current Board\n";
+    int p = 0;
+    char currentBoard[] = "Current Board\n";
+    char gamestateReplica[15];
+//    cout << "Current Board\n";
     while (n < 10)
     {
         for (i; i < n; i++)
@@ -301,26 +304,33 @@ void BoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
             switch (gamestate[i])
             {
             case 0:
-                cout << "O";
+//                cout << "O";
+                gamestateReplica[i + 2 * p] = 'O';
                 break;
             case 1:
-                cout << "X";
+//                cout << "X";
+                gamestateReplica[i + 2 * p] = 'X';
                 break;
             case 2:
-                cout << "|";
+//                cout << "|";
+                gamestateReplica[i + 2 * p] = '|';
                 break;
             }
         }
-        n += 3;
-        cout << "\n";
+        gamestateReplica[i + 2 * p + 1] = '\n';
+        p += 1;
+//        n += 3;
+//        cout << "\n";
     }
 }
 
-void FinalBoardState(newClient, buffer[BUFFER_SIZE], int newClient, char buffer[BUFFER_SIZE], int gamestate[])
+void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 {
     int i = 0;
     int n = 3;
     //    cout << "Current Board\n";
+//    char currentBoard[] = "Current Board\n";
+    char gamestateReplica[10];
     while (n < 10)
     {
         for (i; i < n; i++)
