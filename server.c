@@ -240,6 +240,7 @@ winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     winner test;
     test.check = false;
     test.player = 2;
+    size_t ret;
     BoardState(newClient, buffer[BUFFER_SIZE], gamestate);
 
     while (1)
@@ -247,6 +248,8 @@ winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
         char makeAMove[] = "Make a Move 1-9\n";
         send(newClient, makeAMove, strlen(makeAMove), 0);
 //        cout << "Make a Move 1-9\n";
+        ret = recv(s, buf, sizeof(buf), 0);
+        moveholder = ret;
 //        cin >> moveholder;
         int movetest = (int)moveholder;
         if (movetest < 49 || movetest > 57)
