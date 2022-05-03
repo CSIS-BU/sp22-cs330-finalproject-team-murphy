@@ -239,24 +239,27 @@ winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     winner test;
     test.check = false;
     test.player = 2;
-    BoardState(gamestate);
+    BoardState(newClient, buffer[BUFFER_SIZE], gamestate);
 
     while (1)
     {
-        cout << "Make a Move 1-9\n";
-        cin >> moveholder;
+        char makeAMove[] = "Make a Move 1-9\n";
+//        cout << "Make a Move 1-9\n";
+//        cin >> moveholder;
         int movetest = (int)moveholder;
         if (movetest < 49 || movetest > 57)
         {
-            cout << "Invalid input, try again.\n";
-            BoardState(gamestate);
+            char invalidInput[] = "Invalid Input. Type Again.\n";
+            send(newClient, startingPlayer, strlen(startingPlayer), 0);
+//            cout << "Invalid input, try again.\n";
+            BoardState(newClient, buffer[BUFFER_SIZE], gamestate);
             // https://www.cplusplus.com/forum/beginner/48568/
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+//            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         else
         {
             move = movetest - '0';
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+//            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             break;
         }
     }
@@ -265,21 +268,23 @@ winner HumanTurn(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 
     if (gamestate[move] == 0 || gamestate[move] == 1)
     {
-        cout << "Move Already Made\n";
-        hvictor = HumanTurn(gamestate);
+        char moveMade[] = "Move Already Made\n";
+//        cout << "Move Already Made\n";
+        hvictor = HumanTurn(newClient, buffer[BUFFER_SIZE], gamestate);
     }
     else
     {
         gamestate[move] = 1;
-        test = CheckWin(gamestate);
+        test = CheckWin(newClient, buffer[BUFFER_SIZE], gamestate);
         if (test.check)
         {
             hvictor = test;
-            cout << "Final Board State\n";
-            FinalBoardState(gamestate);
+            char finalBoardState[] = "Final Board State\n";
+//            cout << "Final Board State\n";
+            FinalBoardState(newClient, buffer[BUFFER_SIZE], gamestate);
             return hvictor;
         }
-        hvictor = CompTurn(gamestate);
+        hvictor = CompTurn(newClient, buffer[BUFFER_SIZE], gamestate);
     }
     return hvictor;
 }
@@ -311,7 +316,7 @@ void BoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
     }
 }
 
-void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
+void FinalBoardState(newClient, buffer[BUFFER_SIZE], int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 {
     int i = 0;
     int n = 3;
@@ -341,60 +346,62 @@ void FinalBoardState(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 winner CheckWin(int newClient, char buffer[BUFFER_SIZE], int gamestate[])
 {
     winner victor;
-    victor.check = false;
+    victor.check = 0; //false
     victor.player = 2;
     // Comp Horizontal Test
     if ((gamestate[0] == 0 && gamestate[1] == 0 && gamestate[2] == 0) || (gamestate[3] == 0 && gamestate[4] == 0 && gamestate[5] == 0) || (gamestate[6] == 0 && gamestate[7] == 0 && gamestate[8] == 0))
     {
-        victor.check = true;
+        victor.check = 1; //true
         victor.player = 0;
     }
     // Comp Vertical Test
     else if ((gamestate[0] == 0 && gamestate[3] == 0 && gamestate[6] == 0) || (gamestate[1] == 0 && gamestate[4] == 0 && gamestate[7] == 0) || (gamestate[2] == 0 && gamestate[5] == 0 && gamestate[8] == 0))
     {
-        victor.check = true;
+        victor.check = 1; //true
         victor.player = 0;
     }
     // Comp Diagonal Test
     else if ((gamestate[0] == 0 && gamestate[4] == 0 && gamestate[8] == 0) || (gamestate[2] == 0 && gamestate[4] == 0 && gamestate[6] == 0))
     {
-        victor.check = true;
+        victor.check = 1; //true
         victor.player = 0;
     }
     // Human Horizontal Test
     else if ((gamestate[0] == 1 && gamestate[1] == 1 && gamestate[2] == 1) || (gamestate[3] == 1 && gamestate[4] == 1 && gamestate[5] == 1) || (gamestate[6] == 1 && gamestate[7] == 1 && gamestate[8] == 1))
     {
-        victor.check = true;
+        victor.check = 1; //true
         victor.player = 1;
     }
     // Human Vertical Test
     else if ((gamestate[0] == 1 && gamestate[3] == 1 && gamestate[6] == 1) || (gamestate[1] == 1 && gamestate[4] == 1 && gamestate[7] == 1) || (gamestate[2] == 1 && gamestate[5] == 1 && gamestate[8] == 1))
     {
-        victor.check = true;
+        victor.check = 1; //true
         victor.player = 1;
     }
     // Human Diagonal Test
     else if ((gamestate[0] == 1 && gamestate[4] == 1 && gamestate[8] == 1) || (gamestate[2] == 1 && gamestate[4] == 1 && gamestate[6] == 1))
     {
-        victor.check = true;
+        victor.check = 1; //true
         victor.player = 1;
     }
     // Draw Test
     else
     {
-        bool DrawTest = true;
+        int DrawTest = 1; //true
         for (int i = 0; i < 9; i++)
         {
             if (gamestate[i] == 2)
             {
-                DrawTest = false;
+                DrawTest = 0; //false
             }
         }
-        if (DrawTest)
+        if (DrawTest == 1)
         {
-            cout << "Final Board State\n";
-            FinalBoardState(gamestate);
-            cout << "The Game is a Draw.\n";
+            char finalBoardState[] = "Final Board State\n";
+//            cout << "Final Board State\n";
+            FinalBoardState(newClient, buffer[BUFFER_SIZE], gamestate);
+            char draw[] = "Final Board State\n";
+//            cout << "The Game is a Draw.\n";
             exit(NULL);
         }
     }
