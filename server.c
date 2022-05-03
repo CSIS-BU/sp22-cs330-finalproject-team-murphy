@@ -10,8 +10,20 @@
 #include<netinet/in.h>
 #include<time.h>
 
+#include <random>
+#include <ctime>
+
 #define PORT 80
 #define QUEUE 5
+#define BUFFER_SIZE 2000
+
+int Turn(int newClient, char buffer [BUFFER_SIZE], int errCnt);
+winner CompTurn(int gamestate[]);
+winner HumanTurn(int gamestate[]);
+winner CheckWin(int gamestate[]);
+void Victor(int win);
+void BoardState(int gamestate[]);
+void FinalBoardState(int gamestate[]);
 
 int main(int argc, char *argv[])
 {
@@ -22,7 +34,7 @@ int main(int argc, char *argv[])
 	int readSize;
 	struct sockaddr_in server;
 	struct client;
-	char contents[2000];
+//	char contents[2000];
 
 	//make socket
 	sock = socket(AF_INET , SOCK_STREAM , 0);
@@ -75,6 +87,18 @@ int main(int argc, char *argv[])
 
 
 			// Tic-Tac-Toe Functionality
+			mt19937 mt(time(nullptr));
+			struct winner { int check; int player; };
+
+			char buffer [BUFFER_SIZE];
+
+            int gameState[10] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, NULL };
+            winner victor;
+            victor.check = 0; //false
+            victor.player = 2;
+            int errCnt = 0;
+            int starter = Turn(newClient, errCnt);
+            cout << "Player = X, AI = O\n";
 		}
 	}
 
@@ -99,4 +123,263 @@ int main(int argc, char *argv[])
 	}
 	
 	return 0;
+}
+
+int Turn(int newClient, char buffer [BUFFER_SIZE], int errCnt)
+{
+    char start = 'z';       //setting this to a char prevented the string error
+    size_t length = 0;
+    errCnt++;
+    char startingPlayer[] = "Who will go first? 1 = Ai; 2 = Player; 3 = Random\n";
+    char invalidInput[] = "Invalid Input. Type Again.\n";
+    send(newClient, startingPlayer, strlen(startingPlayer), 0);
+
+    while (start != '1' && start != '2' && start != '3')
+    {
+        while ((length = recv(newClient, buffer, sizeof(buffer), 0) != 1))
+        {
+            errCnt++;
+            send(newClient, invalidInput, strlen(invalidInput), 0);
+            // temp fix to write to buffer?
+            // size_t invalidInputLen = sprintf(buf, invalidInput, 1);
+            // send(newClient, buf, invalidInputLen, 0);
+
+            if (errCnt >= 10)
+            {
+                close(newClient);
+                exit(1491149029);
+            }
+        }
+        // Read first character client sends back
+        start = buffer[0];
+    }
+
+    //if (start == '1' || start == '2' || start == '3')
+    //{
+        return start;
+    //}
+    //else
+    //{
+    //    cout << "Invalid Input. Type Again.\n";
+    //    Turn(errCnt);
+    //}
+}
+
+winner CompTurn(int gamestate[])
+{
+    int i = 0;
+    int n = 3;
+    int move;
+    winner cvictor;
+    cvictor.check = false;
+    cvictor.player = 2;
+    winner test;
+    test.check = false;
+    test.player = 2;
+    move = mt() % 9;
+
+    if (gamestate[move] == 0 || gamestate[move] == 1)
+    {
+        cvictor = CompTurn(gamestate);
+    }
+    else
+    {
+        gamestate[move] = 0;
+        test = CheckWin(gamestate);
+        if (test.check)
+        {
+            cvictor = test;
+            cout << "Final Board State\n";
+            FinalBoardState(gamestate);
+            return cvictor;
+        }
+        cvictor = HumanTurn(gamestate);
+    }
+    return cvictor;
+}
+
+winner HumanTurn(int gamestate[])
+{
+    char moveholder;
+    int movetest;
+    int move;
+    winner hvictor;
+    hvictor.check = false;
+    hvictor.player = 2;
+    winner test;
+    test.check = false;
+    test.player = 2;
+    BoardState(gamestate);
+
+    while (1)
+    {
+        cout << "Make a Move 1-9\n";
+        cin >> moveholder;
+        int movetest = (int)moveholder;
+        if (movetest < 49 || movetest > 57)
+        {
+            cout << "Invalid input, try again.\n";
+            BoardState(gamestate);
+            // https://www.cplusplus.com/forum/beginner/48568/
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        else
+        {
+            move = movetest - '0';
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        }
+    }
+
+    move--;
+
+    if (gamestate[move] == 0 || gamestate[move] == 1)
+    {
+        cout << "Move Already Made\n";
+        hvictor = HumanTurn(gamestate);
+    }
+    else
+    {
+        gamestate[move] = 1;
+        test = CheckWin(gamestate);
+        if (test.check)
+        {
+            hvictor = test;
+            cout << "Final Board State\n";
+            FinalBoardState(gamestate);
+            return hvictor;
+        }
+        hvictor = CompTurn(gamestate);
+    }
+    return hvictor;
+}
+
+void BoardState(int gamestate[])
+{
+    int i = 0;
+    int n = 3;
+    cout << "Current Board\n";
+    while (n < 10)
+    {
+        for (i; i < n; i++)
+        {
+            switch (gamestate[i])
+            {
+            case 0:
+                cout << "O";
+                break;
+            case 1:
+                cout << "X";
+                break;
+            case 2:
+                cout << "|";
+                break;
+            }
+        }
+        n += 3;
+        cout << "\n";
+    }
+}
+
+void FinalBoardState(int gamestate[])
+{
+    int i = 0;
+    int n = 3;
+    //    cout << "Current Board\n";
+    while (n < 10)
+    {
+        for (i; i < n; i++)
+        {
+            switch (gamestate[i])
+            {
+            case 0:
+                cout << "O";
+                break;
+            case 1:
+                cout << "X";
+                break;
+            case 2:
+                cout << "|";
+                break;
+            }
+        }
+        n += 3;
+        cout << "\n";
+    }
+}
+
+winner CheckWin(int gamestate[])
+{
+    winner victor;
+    victor.check = false;
+    victor.player = 2;
+    // Comp Horizontal Test
+    if ((gamestate[0] == 0 && gamestate[1] == 0 && gamestate[2] == 0) || (gamestate[3] == 0 && gamestate[4] == 0 && gamestate[5] == 0) || (gamestate[6] == 0 && gamestate[7] == 0 && gamestate[8] == 0))
+    {
+        victor.check = true;
+        victor.player = 0;
+    }
+    // Comp Vertical Test
+    else if ((gamestate[0] == 0 && gamestate[3] == 0 && gamestate[6] == 0) || (gamestate[1] == 0 && gamestate[4] == 0 && gamestate[7] == 0) || (gamestate[2] == 0 && gamestate[5] == 0 && gamestate[8] == 0))
+    {
+        victor.check = true;
+        victor.player = 0;
+    }
+    // Comp Diagonal Test
+    else if ((gamestate[0] == 0 && gamestate[4] == 0 && gamestate[8] == 0) || (gamestate[2] == 0 && gamestate[4] == 0 && gamestate[6] == 0))
+    {
+        victor.check = true;
+        victor.player = 0;
+    }
+    // Human Horizontal Test
+    else if ((gamestate[0] == 1 && gamestate[1] == 1 && gamestate[2] == 1) || (gamestate[3] == 1 && gamestate[4] == 1 && gamestate[5] == 1) || (gamestate[6] == 1 && gamestate[7] == 1 && gamestate[8] == 1))
+    {
+        victor.check = true;
+        victor.player = 1;
+    }
+    // Human Vertical Test
+    else if ((gamestate[0] == 1 && gamestate[3] == 1 && gamestate[6] == 1) || (gamestate[1] == 1 && gamestate[4] == 1 && gamestate[7] == 1) || (gamestate[2] == 1 && gamestate[5] == 1 && gamestate[8] == 1))
+    {
+        victor.check = true;
+        victor.player = 1;
+    }
+    // Human Diagonal Test
+    else if ((gamestate[0] == 1 && gamestate[4] == 1 && gamestate[8] == 1) || (gamestate[2] == 1 && gamestate[4] == 1 && gamestate[6] == 1))
+    {
+        victor.check = true;
+        victor.player = 1;
+    }
+    // Draw Test
+    else
+    {
+        bool DrawTest = true;
+        for (int i = 0; i < 9; i++)
+        {
+            if (gamestate[i] == 2)
+            {
+                DrawTest = false;
+            }
+        }
+        if (DrawTest)
+        {
+            cout << "Final Board State\n";
+            FinalBoardState(gamestate);
+            cout << "The Game is a Draw.\n";
+            exit(NULL);
+        }
+    }
+    return victor;
+}
+
+void Victor(int win)
+{
+    switch (win)
+    {
+    case 0:
+        cout << "You Lose!\n";
+        break;
+    case 1:
+        cout << "You Win!\n";
+        break;
+    }
 }
