@@ -3,6 +3,7 @@
 #include <sys/socket.h>	
 #include <arpa/inet.h>	
 #include <unistd.h>
+#define QUEUE_LENGTH 10
 
 int main(int argc, char* argv[])
 {
@@ -22,12 +23,19 @@ int main(int argc, char* argv[])
 	serv.sin_family = AF_INET;
 	serv.sin_port = htons(8888);
 
-	//connecting to the remote server
+	/*//connecting to the remote server
 	if (connect(socket, (struct sockaddr*)&serv, sizeof(serv)) < 0)
 	{
 		perror("Connection has failed.");
 		return 1;
+	}*/
+
+	if ((bind(socket, (struct sockaddr*)&serv, sizeof(serv))) < 0) {
+		perror("Connection has failed");
+		exit(1);
 	}
+
+	listen(socket, QUEUE_LENGTH);
 
 	puts("Connection made\n");
 
