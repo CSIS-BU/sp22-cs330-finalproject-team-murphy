@@ -3,13 +3,30 @@
 #include <sys/socket.h>	
 #include <arpa/inet.h>	
 #include <unistd.h>
-#define QUEUE_LENGTH 10
 
 int main(int argc, char* argv[])
 {
 	int socket;
 	struct sockaddr_in serv;
 	char message[1000], server_reply[2000];
+
+	struct hostent* hostholder;
+	char* host;
+
+	host = "localhost";
+
+	hostholder = gethostbyname(host);
+	if (!hostholder)
+	{
+		printf(stderr, "Host not known", host);
+		exit(1);
+	}
+
+	serv.sin_addr.s_addr = inet_addr(""); //address will go here
+	serv.sin_family = AF_INET;
+	bzero((char*)&serv, sizeof(serv));
+	bopy(hostholder->h_addr, (char*)&serv.sin_addr, hostholder->h_length);
+	serv.sin_port = htons(8888);
 
 	//Creating the socket
 	socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -19,23 +36,14 @@ int main(int argc, char* argv[])
 	}
 	puts("Socket has been made");
 
-	serv.sin_addr.s_addr = inet_addr(""); //address will go here
-	serv.sin_family = AF_INET;
-	serv.sin_port = htons(8888);
+	
 
-	/*//connecting to the remote server
+	//connecting to the remote server
 	if (connect(socket, (struct sockaddr*)&serv, sizeof(serv)) < 0)
 	{
 		perror("Connection has failed.");
-		return 1;
-	}*/
-
-	if ((bind(socket, (struct sockaddr*)&serv, sizeof(serv))) < 0) {
-		perror("Connection has failed");
 		exit(1);
 	}
-
-	listen(socket, QUEUE_LENGTH);
 
 	puts("Connection made\n");
 
